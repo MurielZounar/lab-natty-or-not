@@ -1,0 +1,1184 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Aprenda Python do Zero: Guia Interativo</title>
+        <script src="https://cdn.tailwindcss.com"></script>
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        <style>
+            body {
+                font-family: "Inter", sans-serif;
+            }
+            .content-card {
+                transition: transform 0.2s ease-in-out,
+                    box-shadow 0.2s ease-in-out;
+            }
+            .content-card:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1),
+                    0 4px 6px -4px rgb(0 0 0 / 0.1);
+            }
+            .nav-button-active {
+                background-color: #0d9488;
+                color: white;
+            }
+            .code-block {
+                background-color: #1e293b;
+                color: #f8fafc;
+                border-radius: 0.5rem;
+                padding: 1rem;
+                position: relative;
+            }
+            .copy-btn {
+                position: absolute;
+                top: 0.5rem;
+                right: 0.5rem;
+                background-color: #334155;
+                color: #cbd5e1;
+                padding: 0.25rem 0.5rem;
+                border-radius: 0.25rem;
+                font-size: 0.75rem;
+                cursor: pointer;
+                border: none;
+            }
+            .copy-btn:hover {
+                background-color: #475569;
+            }
+            .chart-container {
+                position: relative;
+                width: 100%;
+                max-width: 600px;
+                margin-left: auto;
+                margin-right: auto;
+                height: 350px;
+                max-height: 400px;
+            }
+        </style>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link
+            href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+            rel="stylesheet"
+        />
+    </head>
+    <body class="bg-slate-50 text-slate-800">
+        <!-- Chosen Palette: Slate & Teal -->
+        <!-- Application Structure Plan: A modular, single-page application (SPA) design was chosen over a linear document to enhance user engagement and facilitate non-linear learning. The structure consists of a main header, a grid-based navigation for chapters, and a dynamic content area. This approach breaks down the intimidating wall of text of a traditional e-book into manageable, interactive modules. Key interactions include a persistent navigation, dynamic content rendering for each chapter, interactive code snippets with simulated output, practical quizzes for reinforcement, and a searchable glossary modal. This structure was chosen because it turns passive reading into active learning, allowing users to jump between topics easily and test their knowledge in context, which is a more effective pedagogy for programming. -->
+        <!-- Visualization & Content Choices: 
+        - Report Info: Python's applications (Chapter 1) -> Goal: Inform/Compare -> Viz: Bar Chart (Chart.js) -> Interaction: Hover tooltips -> Justification: A chart provides a quick, impactful visual comparison of Python's versatility, which is more engaging than a simple text list.
+        - Report Info: Code examples (All Chapters) -> Goal: Practice/Inform -> Presentation: Styled code blocks with "Copy" and simulated "Run" buttons -> Interaction: Click to copy, click to see output -> Justification: This creates a pseudo-playground environment, encouraging users to interact with the code and see immediate results, reinforcing concepts without needing a local setup.
+        - Report Info: Practical Exercises (All Chapters) -> Goal: Engage/Test Knowledge -> Presentation: Interactive quiz cards -> Interaction: Select answer, click to check -> Justification: Transforms passive questions into active challenges with instant feedback, improving knowledge retention.
+        - Report Info: Collection Types (Chapter 8) -> Goal: Compare -> Presentation: Interactive feature table -> Interaction: Hover to highlight features -> Justification: Allows for direct, side-by-side comparison of complex data structures in a visually organized and digestible format.
+        - Report Info: Glossary/Cheatsheet -> Goal: Inform/Organize -> Presentation: Searchable Modal -> Interaction: Click to open, type to filter -> Justification: Provides a powerful, on-demand reference tool that is far more usable than a static list at the end of a document.
+    -->
+        <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+
+        <header class="bg-white shadow-md p-4 sticky top-0 z-20">
+            <div class="container mx-auto flex justify-between items-center">
+                <h1 class="text-2xl font-bold text-teal-700">
+                    Aprenda Python do Zero
+                </h1>
+                <button
+                    id="glossary-btn"
+                    class="bg-teal-600 text-white px-4 py-2 rounded-lg hover:bg-teal-700 transition"
+                >
+                    Glossário
+                </button>
+            </div>
+        </header>
+
+        <main class="container mx-auto p-4 md:p-8">
+            <div
+                id="navigation"
+                class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
+            ></div>
+
+            <div
+                id="content-area"
+                class="mt-8 bg-white p-6 rounded-lg shadow-lg min-h-[50vh]"
+            ></div>
+        </main>
+
+        <div
+            id="glossary-modal"
+            class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-30 hidden"
+        >
+            <div
+                class="bg-white rounded-lg shadow-xl w-11/12 md:w-2/3 lg:w-1/2 max-h-[80vh] flex flex-col"
+            >
+                <div class="p-4 border-b flex justify-between items-center">
+                    <h2 class="text-xl font-bold">Glossário e Cheatsheet</h2>
+                    <button id="close-modal-btn" class="text-2xl font-bold">
+                        &times;
+                    </button>
+                </div>
+                <div class="p-4 border-b">
+                    <input
+                        type="text"
+                        id="glossary-search"
+                        placeholder="Buscar termo..."
+                        class="w-full p-2 border rounded-lg"
+                    />
+                </div>
+                <div id="glossary-content" class="overflow-y-auto p-4"></div>
+            </div>
+        </div>
+
+        <footer class="text-center p-4 mt-8 text-slate-500">
+            <p>Criado como uma experiência de aprendizado interativa.</p>
+        </footer>
+
+        <script>
+            const chapters = [
+                {
+                    id: 1,
+                    title: "Bem-Vindo ao Python!",
+                    desc: "O que é Python e por que você deveria aprendê-lo.",
+                },
+                {
+                    id: 2,
+                    title: "Preparando o Terreno",
+                    desc: "Instalação e configuração do seu ambiente.",
+                },
+                {
+                    id: 3,
+                    title: "Os Pilares",
+                    desc: "Variáveis, tipos de dados e operadores.",
+                },
+                {
+                    id: 4,
+                    title: "Tomando Decisões",
+                    desc: "Estruturas condicionais: if, elif, else.",
+                },
+                {
+                    id: 5,
+                    title: "Repetição é a Chave",
+                    desc: "Loops com for e while.",
+                },
+                {
+                    id: 6,
+                    title: "Organizando o Código",
+                    desc: "Criando e usando funções.",
+                },
+                {
+                    id: 7,
+                    title: "Coleções de Dados",
+                    desc: "Dominando listas e tuplas.",
+                },
+                {
+                    id: 8,
+                    title: "Mais Coleções",
+                    desc: "Explorando dicionários e conjuntos.",
+                },
+                {
+                    id: 9,
+                    title: "Lidando com Erros",
+                    desc: "Tratamento de exceções com try/except.",
+                },
+                {
+                    id: 10,
+                    title: "Próximos Passos",
+                    desc: "Continue sua jornada no mundo Python.",
+                },
+            ];
+
+            const contentData = {
+                1: `
+                <h2 class="text-3xl font-bold mb-4">Capítulo 1: Bem-Vindo ao Mundo de Python!</h2>
+                <p class="mb-4">Imagine que você quer dar instruções a um robô. Você precisa falar a língua dele, certo? Na programação, essa "língua" é o que chamamos de <strong>linguagem de programação</strong>. E <strong>Python</strong> é uma das mais populares e amigáveis para iniciantes!</p>
+                <div class="bg-teal-50 p-4 rounded-lg mb-6">
+                    <h3 class="font-bold text-xl text-teal-800 mb-2">Por que Python é tão popular?</h3>
+                    <ul class="list-disc list-inside space-y-1">
+                        <li><strong>Simples e Fácil de Ler:</strong> A sintaxe de Python é muito parecida com o inglês.</li>
+                        <li><strong>Versátil:</strong> Pode ser usado para quase tudo! Desde criar sites até controlar robôs.</li>
+                        <li><strong>Comunidade Ativa:</strong> Milhões de pessoas usam e ajudam uns aos outros.</li>
+                        <li><strong>Alta Demanda no Mercado:</strong> Muitas empresas procuram profissionais que dominem Python.</li>
+                    </ul>
+                </div>
+                <h3 class="font-bold text-xl mb-4">Onde o Python é usado?</h3>
+                <p class="mb-4">Python está por toda parte! O gráfico abaixo mostra uma estimativa da popularidade do Python em diversas áreas. Ele é uma verdadeira ferramenta multiuso no mundo da tecnologia.</p>
+                <div class="chart-container">
+                    <canvas id="usageChart"></canvas>
+                </div>
+            `,
+                2: `
+                <h2 class="text-3xl font-bold mb-4">Capítulo 2: Preparando o Terreno: Instalação e Ambiente</h2>
+                <p class="mb-6">Antes de começar a programar, precisamos preparar nosso "laboratório". Isso envolve instalar o Python no seu computador e escolher um bom lugar para escrever seu código.</p>
+                <h3 class="font-bold text-xl mb-2">Instalando Python</h3>
+                <p class="mb-4">A instalação é o primeiro passo. Escolha o sistema operacional do seu computador e siga as instruções:</p>
+                <h4 class="font-semibold text-lg mt-4 mb-2">Para Windows:</h4>
+                <ol class="list-decimal list-inside space-y-2 mb-4">
+                    <li><strong>Baixe o Instalador:</strong> Acesse o site oficial do Python: <a href="https://www.python.org/downloads/" target="_blank" class="text-teal-600 hover:underline">python.org/downloads/</a>. Clique no botão para baixar a versão mais recente para Windows.</li>
+                    <li><strong>Execute o Instalador:</strong> Abra o arquivo <code>.exe</code> que você baixou.</li>
+                    <li><strong>ATENÇÃO:</strong> Na primeira tela do instalador, <strong>MUITO IMPORTANTE</strong>, marque a caixa <strong>"Add Python X.Y to PATH"</strong> (onde X.Y é a versão do Python, por exemplo, 3.10). Isso permitirá que você execute Python de qualquer lugar no seu computador.</li>
+                    <li><strong>Instale Agora:</strong> Clique em "Install Now" e siga as instruções. Pode ser que o Windows peça permissão para instalar.</li>
+                    <li><strong>Verifique a Instalação:</strong> Abra o <strong>Prompt de Comando</strong> (pesquise por <code>cmd</code> no menu iniciar) e digite:
+                        <div class="code-block text-sm my-2"><pre><code>python --version</code></pre></div>
+                        Se tudo deu certo, você verá a versão do Python instalada (ex: <code>Python 3.10.x</code>).
+                    </li>
+                </ol>
+                <h4 class="font-semibold text-lg mt-4 mb-2">Para macOS:</h4>
+                <ol class="list-decimal list-inside space-y-2 mb-4">
+                    <li><strong>Baixe o Instalador:</strong> Acesse o site oficial do Python: <a href="https://www.python.org/downloads/" target="_blank" class="text-teal-600 hover:underline">python.org/downloads/</a>. Clique no botão para baixar a versão mais recente para macOS.</li>
+                    <li><strong>Execute o Instalador:</strong> Abra o arquivo <code>.pkg</code> que você baixou e siga as instruções do instalador.</li>
+                    <li><strong>Verifique a Instalação:</strong> Abra o <strong>Terminal</strong> (você pode encontrá-lo em Aplicativos > Utilitários) e digite:
+                        <div class="code-block text-sm my-2"><pre><code>python3 --version</code></pre></div>
+                        No macOS, é comum usar <code>python3</code> para se referir à versão mais recente do Python.
+                    </li>
+                </ol>
+                <h4 class="font-semibold text-lg mt-4 mb-2">Para Linux (Ubuntu/Debian):</h4>
+                <p class="mb-2">Python geralmente já vem pré-instalado em muitas distribuições Linux. No entanto, é bom garantir que você tem a versão mais recente.</p>
+                <ol class="list-decimal list-inside space-y-2 mb-4">
+                    <li><strong>Atualize os Pacotes:</strong> Abra o <strong>Terminal</strong> e digite:
+                        <div class="code-block text-sm my-2"><pre><code>sudo apt update
+sudo apt upgrade</code></pre></div>
+                    </li>
+                    <li><strong>Instale Python (se necessário):</strong>
+                        <div class="code-block text-sm my-2"><pre><code>sudo apt install python3
+sudo apt install python3-pip</code></pre></div>
+                    </li>
+                    <li><strong>Verifique a Instalação:</strong>
+                        <div class="code-block text-sm my-2"><pre><code>python3 --version</code></pre></div>
+                    </li>
+                </ol>
+                <h3 class="font-bold text-xl mt-6 mb-2">Escolhendo seu Editor de Código/IDE</h3>
+                <p class="mb-4">Um <strong>Editor de Código</strong> é onde você vai escrever seus programas. Para iniciantes, sugiro:</p>
+                <ul class="list-disc list-inside space-y-2 mb-6">
+                    <li><strong>VS Code (Visual Studio Code):</strong> Gratuito, leve, muito popular.</li>
+                    <li><strong>PyCharm Community Edition:</strong> IDE completa, feita especificamente para Python (versão gratuita).</li>
+                    <li><strong>Thonny:</strong> Perfeito para iniciantes absolutos, muito simples e já vem com Python embutido.</li>
+                </ul>
+                <h3 class="font-bold text-xl mt-6 mb-2">Primeiro "Olá, Mundo!"</h3>
+                <p class="mb-4">Vamos escrever e executar seu primeiro programa!</p>
+                <ol class="list-decimal list-inside space-y-2 mb-4">
+                    <li><strong>Abra seu Editor de Código</strong> (VS Code, PyCharm, Thonny, etc.).</li>
+                    <li><strong>Crie um Novo Arquivo:</strong> Vá em "Arquivo" > "Novo Arquivo".</li>
+                    <li><strong>Digite o Código:</strong>
+                        <div class="code-block text-sm my-2">
+                            <button class="copy-btn" onclick="copyCode(this)">Copiar</button>
+                            <pre><code class="language-python">print("Olá, Mundo!")</code></pre>
+                            <button onclick="showOutput(this, 'Olá, Mundo!')" class="mt-2 bg-slate-600 text-white px-3 py-1 text-sm rounded hover:bg-slate-700">▶ Executar</button>
+                            <div class="output mt-2 p-2 bg-slate-800 rounded hidden text-sm"></div>
+                        </div>
+                    </li>
+                    <li><strong>Salve o Arquivo:</strong> Dê um nome ao arquivo, por exemplo, <code>primeiro_programa.py</code>.</li>
+                    <li><strong>Execute o Código:</strong> Clique no botão de "Play" no seu editor ou use o Terminal/Prompt de Comando:
+                        <div class="code-block text-sm my-2"><pre><code>python primeiro_programa.py</code></pre></div>
+                        Você deverá ver a mensagem: <code>Olá, Mundo!</code>
+                    </li>
+                </ol>
+            `,
+                3: `
+                <h2 class="text-3xl font-bold mb-4">Capítulo 3: Os Pilares da Programação</h2>
+                <p class="mb-6">Estes são os blocos de construção fundamentais de qualquer programa. Vamos entendê-los na prática.</p>
+                
+                <h3 class="font-bold text-xl mb-2">Variáveis e Tipos de Dados</h3>
+                <p class="mb-4">Uma <strong>variável</strong> é como uma caixa com uma etiqueta, onde você guarda informações. Python adivinha o tipo de informação (texto, número, etc.) automaticamente.</p>
+                <div class="code-block">
+                    <button class="copy-btn" onclick="copyCode(this)">Copiar</button>
+                    <pre><code class="language-python"># String (texto)
+nome = "Alice"
+# Integer (número inteiro)
+idade = 30
+# Float (número com decimal)
+altura = 1.75
+# Boolean (verdadeiro/falso)
+tem_pet = True
+
+print(type(nome))
+print(type(idade))
+print(type(altura))
+print(type(tem_pet))</code></pre>
+                    <button onclick="showOutput(this, '<class \'str\'>\\n<class \'int\'>\\n<class \'float\'>\\n<class \'bool\'>')" class="mt-2 bg-slate-600 text-white px-3 py-1 text-sm rounded hover:bg-slate-700">▶ Executar</button>
+                    <div class="output mt-2 p-2 bg-slate-800 rounded hidden text-sm"></div>
+                </div>
+
+                <h3 class="font-bold text-xl mt-6 mb-2">Operadores Aritméticos</h3>
+                <p class="mb-4">São os símbolos que usamos para fazer contas.</p>
+                <div class="code-block">
+                    <button class="copy-btn" onclick="copyCode(this)">Copiar</button>
+                    <pre><code class="language-python">num1 = 20
+num2 = 7
+
+soma = num1 + num2
+subtracao = num1 - num2
+multiplicacao = num1 * num2
+divisao = num1 / num2 # Resultado será float
+divisao_inteira = num1 // num2
+resto = num1 % num2
+potencia = 2 ** 4
+
+print(f"Soma: {soma}")
+print(f"Subtração: {subtracao}")
+print(f"Multiplicação: {multiplicacao}")
+print(f"Divisão: {divisao}")
+print(f"Divisão Inteira: {divisao_inteira}")
+print(f"Resto da Divisão: {resto}")
+print(f"Potência: {potencia}")</code></pre>
+                    <button onclick="showOutput(this, 'Soma: 27\\nSubtração: 13\\nMultiplicação: 140\\nDivisão: 2.857142857142857\\nDivisão Inteira: 2\\nResto da Divisão: 6\\nPotência: 16')" class="mt-2 bg-slate-600 text-white px-3 py-1 text-sm rounded hover:bg-slate-700">▶ Executar</button>
+                    <div class="output mt-2 p-2 bg-slate-800 rounded hidden text-sm"></div>
+                </div>
+
+                <h3 class="font-bold text-xl mt-6 mb-2">Entrada e Saída de Dados</h3>
+                <p class="mb-4">Para interagir com o usuário, usamos <code>input()</code> para receber dados e <code>print()</code> para mostrar dados.</p>
+                <div class="code-block">
+                    <button class="copy-btn" onclick="copyCode(this)">Copiar</button>
+                    <pre><code class="language-python">nome_usuario = input("Qual é o seu nome? ")
+print(f"Olá, {nome_usuario}!")</code></pre>
+                    <button onclick="showOutput(this, 'Qual é o seu nome? [Usuário digita: João]\\nOlá, João!')" class="mt-2 bg-slate-600 text-white px-3 py-1 text-sm rounded hover:bg-slate-700">▶ Executar (Simulado)</button>
+                    <div class="output mt-2 p-2 bg-slate-800 rounded hidden text-sm"></div>
+                </div>
+
+                <div class="mt-8 p-4 border border-teal-200 rounded-lg bg-white">
+                    <h4 class="font-bold mb-2">Desafio Prático: Qual o tipo?</h4>
+                    <p class="mb-3">Qual é o tipo de dado da variável <code>preco</code> no código abaixo?</p>
+                    <div class="code-block mb-4"><pre><code class="language-python">preco = 19.99</code></pre></div>
+                    <div id="quiz-1">
+                        <div class="space-y-2">
+                            <label class="flex items-center"><input type="radio" name="q1" value="int" class="mr-2"> int (Inteiro)</label>
+                            <label class="flex items-center"><input type="radio" name="q1" value="str" class="mr-2"> str (String)</label>
+                            <label class="flex items-center"><input type="radio" name="q1" value="float" class="mr-2"> float (Ponto Flutuante)</label>
+                        </div>
+                        <button onclick="checkQuiz('q1', 'float', 'feedback-1')" class="mt-3 bg-teal-600 text-white px-4 py-1 rounded hover:bg-teal-700">Verificar</button>
+                        <p id="feedback-1" class="mt-2 font-medium"></p>
+                    </div>
+                </div>
+            `,
+                4: `
+                <h2 class="text-3xl font-bold mb-4">Capítulo 4: Tomando Decisões: Estruturas Condicionais</h2>
+                <p class="mb-6">Na vida, tomamos decisões o tempo todo: "Se chover, levo o guarda-chuva; senão, não levo." Na programação, é a mesma coisa! As <strong>estruturas condicionais</strong> permitem que seu programa tome decisões e execute diferentes blocos de código com base em certas condições.</p>
+                
+                <h3 class="font-bold text-xl mb-2"><code>if</code>, <code>elif</code>, <code>else</code></h3>
+                <p class="mb-4">Essas são as palavras-chave mágicas para tomar decisões em Python.</p>
+                <div class="code-block">
+                    <button class="copy-btn" onclick="copyCode(this)">Copiar</button>
+                    <pre><code class="language-python">idade = 16
+
+if idade >= 18:
+    print("Você é maior de idade.")
+else:
+    print("Você é menor de idade.")
+
+hora = 14
+if hora < 12:
+    print("Bom dia!")
+elif hora < 18:
+    print("Boa tarde!")
+else:
+    print("Boa noite!")</code></pre>
+                    <button onclick="showOutput(this, 'Você é menor de idade.\\nBoa tarde!')" class="mt-2 bg-slate-600 text-white px-3 py-1 text-sm rounded hover:bg-slate-700">▶ Executar</button>
+                    <div class="output mt-2 p-2 bg-slate-800 rounded hidden text-sm"></div>
+                </div>
+                <p class="mt-4"><strong>Atenção à Indentação:</strong> Em Python, a indentação (o espaço em branco no início da linha) é <strong>MUITO IMPORTANTE</strong>. Ela define quais linhas de código pertencem a um bloco.</p>
+
+                <h3 class="font-bold text-xl mt-6 mb-2">Operadores de Comparação</h3>
+                <p class="mb-4">São usados para comparar valores e sempre retornam um booleano (<code>True</code> ou <code>False</code>).</p>
+                <div class="code-block">
+                    <button class="copy-btn" onclick="copyCode(this)">Copiar</button>
+                    <pre><code class="language-python">a = 10
+b = 5
+
+print(a == b)
+print(a != b)
+print(a > b)
+print(a <= 10)</code></pre>
+                    <button onclick="showOutput(this, 'False\\nTrue\\nTrue\\nTrue')" class="mt-2 bg-slate-600 text-white px-3 py-1 text-sm rounded hover:bg-slate-700">▶ Executar</button>
+                    <div class="output mt-2 p-2 bg-slate-800 rounded hidden text-sm"></div>
+                </div>
+
+                <h3 class="font-bold text-xl mt-6 mb-2">Operadores Lógicos</h3>
+                <p class="mb-4">Usados para combinar múltiplas condições: <code>and</code> (e), <code>or</code> (ou), <code>not</code> (não).</p>
+                <div class="code-block">
+                    <button class="copy-btn" onclick="copyCode(this)">Copiar</button>
+                    <pre><code class="language-python">idade = 20
+tem_carteira = True
+if idade >= 18 and tem_carteira:
+    print("Pode dirigir.")
+
+tem_passagem = True
+tem_visto = False
+if tem_passagem or tem_visto:
+    print("Pode viajar.")
+
+esta_chovendo = False
+if not esta_chovendo:
+    print("Podemos ir ao parque!")</code></pre>
+                    <button onclick="showOutput(this, 'Pode dirigir.\\nPode viajar.\\nPodemos ir ao parque!')" class="mt-2 bg-slate-600 text-white px-3 py-1 text-sm rounded hover:bg-slate-700">▶ Executar</button>
+                    <div class="output mt-2 p-2 bg-slate-800 rounded hidden text-sm"></div>
+                </div>
+
+                <div class="mt-8 p-4 border border-teal-200 rounded-lg bg-white">
+                    <h4 class="font-bold mb-2">Desafio Prático: Verificador de Voto</h4>
+                    <p class="mb-3">Se a idade for 17, qual será a saída do código abaixo?</p>
+                    <div class="code-block mb-4"><pre><code class="language-python">idade = 17
+if idade >= 16:
+    print("Pode votar.")
+else:
+    print("Não pode votar.")</code></pre></div>
+                    <div id="quiz-2">
+                        <div class="space-y-2">
+                            <label class="flex items-center"><input type="radio" name="q2" value="pode" class="mr-2"> Pode votar.</label>
+                            <label class="flex items-center"><input type="radio" name="q2" value="nao_pode" class="mr-2"> Não pode votar.</label>
+                        </div>
+                        <button onclick="checkQuiz('q2', 'pode', 'feedback-2')" class="mt-3 bg-teal-600 text-white px-4 py-1 rounded hover:bg-teal-700">Verificar</button>
+                        <p id="feedback-2" class="mt-2 font-medium"></p>
+                    </div>
+                </div>
+            `,
+                5: `
+                <h2 class="text-3xl font-bold mb-4">Capítulo 5: Repetição é a Chave: Estruturas de Repetição</h2>
+                <p class="mb-6">Imagine que você precisa imprimir a mesma mensagem 100 vezes. Você não vai digitar <code>print()</code> 100 vezes, certo? É para isso que servem as <strong>estruturas de repetição</strong> (ou loops)! Elas permitem que você execute um bloco de código várias vezes.</p>
+                
+                <h3 class="font-bold text-xl mb-2"><code>for</code> loop</h3>
+                <p class="mb-4">O <code>for</code> loop é usado para <strong>iterar</strong> (percorrer) sobre uma sequência de itens, como uma lista de nomes, os caracteres de um texto ou uma sequência de números.</p>
+                <h4 class="font-semibold text-lg mt-4 mb-2">Iterando com <code>range()</code>:</h4>
+                <div class="code-block">
+                    <button class="copy-btn" onclick="copyCode(this)">Copiar</button>
+                    <pre><code class="language-python"># Contando de 0 a 4
+for i in range(5):
+    print(i)
+
+# Contando de 1 a 5
+for numero in range(1, 6):
+    print(numero)
+
+# Contando de 0 a 10, pulando de 2 em 2
+for par in range(0, 11, 2):
+    print(par)</code></pre>
+                    <button onclick="showOutput(this, '0\\n1\\n2\\n3\\n4\\n1\\n2\\n3\\n4\\n5\\n0\\n2\\n4\\n6\\n8\\n10')" class="mt-2 bg-slate-600 text-white px-3 py-1 text-sm rounded hover:bg-slate-700">▶ Executar</button>
+                    <div class="output mt-2 p-2 bg-slate-800 rounded hidden text-sm"></div>
+                </div>
+                <h4 class="font-semibold text-lg mt-4 mb-2">Iterando sobre uma lista:</h4>
+                <div class="code-block">
+                    <button class="copy-btn" onclick="copyCode(this)">Copiar</button>
+                    <pre><code class="language-python">frutas = ["maçã", "banana", "cereja"]
+for fruta in frutas:
+    print(f"Eu gosto de {fruta}.")</code></pre>
+                    <button onclick="showOutput(this, 'Eu gosto de maçã.\\nEu gosto de banana.\\nEu gosto de cereja.')" class="mt-2 bg-slate-600 text-white px-3 py-1 text-sm rounded hover:bg-slate-700">▶ Executar</button>
+                    <div class="output mt-2 p-2 bg-slate-800 rounded hidden text-sm"></div>
+                </div>
+
+                <h3 class="font-bold text-xl mt-6 mb-2"><code>while</code> loop</h3>
+                <p class="mb-4">O <code>while</code> loop continua executando um bloco de código <strong>enquanto</strong> uma condição for verdadeira. Ele só para quando a condição se torna falsa. <strong>Cuidado:</strong> Se a condição nunca se tornar falsa, você terá um <strong>loop infinito</strong>!</p>
+                <div class="code-block">
+                    <button class="copy-btn" onclick="copyCode(this)">Copiar</button>
+                    <pre><code class="language-python">contador = 0
+while contador < 3:
+    print(f"Contador: {contador}")
+    contador += 1 # Equivalente a contador = contador + 1</code></pre>
+                    <button onclick="showOutput(this, 'Contador: 0\\nContador: 1\\nContador: 2')" class="mt-2 bg-slate-600 text-white px-3 py-1 text-sm rounded hover:bg-slate-700">▶ Executar</button>
+                    <div class="output mt-2 p-2 bg-slate-800 rounded hidden text-sm"></div>
+                </div>
+
+                <h3 class="font-bold text-xl mt-6 mb-2"><code>break</code> e <code>continue</code></h3>
+                <p class="mb-4">Essas duas palavras-chave nos dão mais controle sobre os loops.</p>
+                <ul class="list-disc list-inside space-y-1 mb-4">
+                    <li><strong><code>break</code>:</strong> Interrompe o loop <strong>imediatamente</strong>.</li>
+                    <li><strong><code>continue</code>:</strong> Pula a iteração atual do loop e vai para a próxima.</li>
+                </ul>
+                <div class="code-block">
+                    <button class="copy-btn" onclick="copyCode(this)">Copiar</button>
+                    <pre><code class="language-python">for i in range(5):
+    if i == 3:
+        print("Encontrei o 3, vou parar!")
+        break
+    print(i)
+
+print("--")
+
+for i in range(5):
+    if i % 2 == 0: # Se o número for par
+        continue
+    print(i) # Só imprime números ímpares</code></pre>
+                    <button onclick="showOutput(this, '0\\n1\\n2\\nEncontrei o 3, vou parar!\\n--\\n1\\n3')" class="mt-2 bg-slate-600 text-white px-3 py-1 text-sm rounded hover:bg-slate-700">▶ Executar</button>
+                    <div class="output mt-2 p-2 bg-slate-800 rounded hidden text-sm"></div>
+                </div>
+
+                <div class="mt-8 p-4 border border-teal-200 rounded-lg bg-white">
+                    <h4 class="font-bold mb-2">Desafio Prático: Contagem Regressiva</h4>
+                    <p class="mb-3">Qual será a saída do código abaixo?</p>
+                    <div class="code-block mb-4"><pre><code class="language-python">contador = 5
+while contador > 0:
+    print(contador)
+    contador -= 1</code></pre></div>
+                    <div id="quiz-3">
+                        <div class="space-y-2">
+                            <label class="flex items-center"><input type="radio" name="q3" value="54321" class="mr-2"> 5, 4, 3, 2, 1</label>
+                            <label class="flex items-center"><input type="radio" name="q3" value="543210" class="mr-2"> 5, 4, 3, 2, 1, 0</label>
+                            <label class="flex items-center"><input type="radio" name="q3" value="loop_infinito" class="mr-2"> Loop infinito</label>
+                        </div>
+                        <button onclick="checkQuiz('q3', '54321', 'feedback-3')" class="mt-3 bg-teal-600 text-white px-4 py-1 rounded hover:bg-teal-700">Verificar</button>
+                        <p id="feedback-3" class="mt-2 font-medium"></p>
+                    </div>
+                </div>
+            `,
+                6: `
+                <h2 class="text-3xl font-bold mb-4">Capítulo 6: Organizando seu Código: Funções</h2>
+                <p class="mb-6">À medida que seus programas crescem, eles podem ficar bagunçados. **Funções** são como "mini-programas" dentro do seu programa principal. Elas ajudam a organizar, reutilizar e simplificar seu código.</p>
+                
+                <h3 class="font-bold text-xl mb-2">O que são funções e por que usá-las?</h3>
+                <p class="mb-4">Uma função é um bloco de código que realiza uma tarefa específica e pode ser chamado (executado) várias vezes.</p>
+                <div class="bg-teal-50 p-4 rounded-lg mb-6">
+                    <h4 class="font-bold text-lg text-teal-800 mb-2">Vantagens das Funções:</h4>
+                    <ul class="list-disc list-inside space-y-1">
+                        <li><strong>Reutilização de Código:</strong> Escreva uma vez, use quantas vezes precisar.</li>
+                        <li><strong>Modularização:</strong> Divide seu programa em partes menores e mais gerenciáveis.</li>
+                        <li><strong>Melhor Legibilidade:</strong> Código mais fácil de ler e entender.</li>
+                        <li><strong>Manutenção:</strong> Mude algo em um lugar, e a alteração se aplica em todos os lugares.</li>
+                    </ul>
+                </div>
+
+                <h3 class="font-bold text-xl mt-6 mb-2">Criando suas primeiras funções (<code>def</code>)</h3>
+                <p class="mb-4">Para criar uma função, usamos <code>def</code>, seguido do nome da função, parênteses <code>()</code> e dois pontos <code>:</code>. O corpo da função deve ser indentado.</p>
+                <div class="code-block">
+                    <button class="copy-btn" onclick="copyCode(this)">Copiar</button>
+                    <pre><code class="language-python">def saudacao():
+    print("Olá! Bem-vindo(a) ao mundo das funções!")
+
+saudacao()
+saudacao()</code></pre>
+                    <button onclick="showOutput(this, 'Olá! Bem-vindo(a) ao mundo das funções!\\nOlá! Bem-vindo(a) ao mundo das funções!')" class="mt-2 bg-slate-600 text-white px-3 py-1 text-sm rounded hover:bg-slate-700">▶ Executar</button>
+                    <div class="output mt-2 p-2 bg-slate-800 rounded hidden text-sm"></div>
+                </div>
+
+                <h3 class="font-bold text-xl mt-6 mb-2">Parâmetros e Argumentos</h3>
+                <p class="mb-4">Funções podem receber informações. Essas informações são passadas como <strong>parâmetros</strong> (na definição) e <strong>argumentos</strong> (na chamada).</p>
+                <div class="code-block">
+                    <button class="copy-btn" onclick="copyCode(this)">Copiar</button>
+                    <pre><code class="language-python">def saudacao_personalizada(nome):
+    print(f"Olá, {nome}! Como você está?")
+
+saudacao_personalizada("Alice")
+
+def somar(num1, num2):
+    resultado = num1 + num2
+    print(f"A soma de {num1} e {num2} é: {resultado}")
+
+somar(5, 3)</code></pre>
+                    <button onclick="showOutput(this, 'Olá, Alice! Como você está?\\nA soma de 5 e 3 é: 8')" class="mt-2 bg-slate-600 text-white px-3 py-1 text-sm rounded hover:bg-slate-700">▶ Executar</button>
+                    <div class="output mt-2 p-2 bg-slate-800 rounded hidden text-sm"></div>
+                </div>
+
+                <h3 class="font-bold text-xl mt-6 mb-2">Valores de Retorno (<code>return</code>)</h3>
+                <p class="mb-4">Uma função pode calcular um valor e "devolvê-lo" para ser usado em outra parte do programa, usando <code>return</code>.</p>
+                <div class="code-block">
+                    <button class="copy-btn" onclick="copyCode(this)">Copiar</button>
+                    <pre><code class="language-python">def somar_e_retornar(num1, num2):
+    resultado = num1 + num2
+    return resultado
+
+total = somar_e_retornar(10, 7)
+print(f"O total é: {total}")</code></pre>
+                    <button onclick="showOutput(this, 'O total é: 17')" class="mt-2 bg-slate-600 text-white px-3 py-1 text-sm rounded hover:bg-slate-700">▶ Executar</button>
+                    <div class="output mt-2 p-2 bg-slate-800 rounded hidden text-sm"></div>
+                </div>
+
+                <div class="mt-8 p-4 border border-teal-200 rounded-lg bg-white">
+                    <h4 class="font-bold mb-2">Desafio Prático: Calculadora de Área</h4>
+                    <p class="mb-3">Qual será o resultado da chamada da função <code>calcular_area(5, 10)</code>?</p>
+                    <div class="code-block mb-4"><pre><code class="language-python">def calcular_area(largura, altura):
+    return largura * altura
+
+area = calcular_area(5, 10)
+print(area)</code></pre></div>
+                    <div id="quiz-4">
+                        <div class="space-y-2">
+                            <label class="flex items-center"><input type="radio" name="q4" value="15" class="mr-2"> 15</label>
+                            <label class="flex items-center"><input type="radio" name="q4" value="50" class="mr-2"> 50</label>
+                            <label class="flex items-center"><input type="radio" name="q4" value="erro" class="mr-2"> Erro</label>
+                        </div>
+                        <button onclick="checkQuiz('q4', '50', 'feedback-4')" class="mt-3 bg-teal-600 text-white px-4 py-1 rounded hover:bg-teal-700">Verificar</button>
+                        <p id="feedback-4" class="mt-2 font-medium"></p>
+                    </div>
+                </div>
+            `,
+                7: `
+                <h2 class="text-3xl font-bold mb-4">Capítulo 7: Coleções de Dados: Listas e Tuplas</h2>
+                <p class="mb-6">Até agora, lidamos com variáveis que guardam um único valor. Mas e se você precisar guardar uma coleção de valores, como uma lista de compras? É aí que entram as <strong>coleções de dados</strong>!</p>
+                
+                <h3 class="font-bold text-xl mb-2">Listas</h3>
+                <p class="mb-4">Uma <strong>lista</strong> é uma coleção ordenada e <strong>mutável</strong> (você pode mudar, adicionar ou remover itens) de itens. Pense em uma lista de compras. Listas são definidas usando colchetes <code>[]</code>.</p>
+                <h4 class="font-semibold text-lg mt-4 mb-2">Criando e Acessando Elementos:</h4>
+                <div class="code-block">
+                    <button class="copy-btn" onclick="copyCode(this)">Copiar</button>
+                    <pre><code class="language-python">frutas = ["maçã", "banana", "cereja", "uva"]
+print(frutas[0]) # Primeiro item (índice 0)
+print(frutas[3]) # Quarto item
+print(frutas[-1]) # Último item</code></pre>
+                    <button onclick="showOutput(this, 'maçã\\nuva\\nuva')" class="mt-2 bg-slate-600 text-white px-3 py-1 text-sm rounded hover:bg-slate-700">▶ Executar</button>
+                    <div class="output mt-2 p-2 bg-slate-800 rounded hidden text-sm"></div>
+                </div>
+                <h4 class="font-semibold text-lg mt-4 mb-2">Adicionando, Removendo e Modificando:</h4>
+                <div class="code-block">
+                    <button class="copy-btn" onclick="copyCode(this)">Copiar</button>
+                    <pre><code class="language-python">frutas = ["maçã", "banana"]
+frutas.append("laranja") # Adiciona ao final
+frutas.insert(1, "abacaxi") # Adiciona na posição 1
+print(frutas)
+
+frutas[0] = "melancia" # Modifica o primeiro item
+print(frutas)
+
+frutas.remove("banana") # Remove pelo valor
+print(frutas)
+
+item_removido = frutas.pop() # Remove o último e retorna
+print(item_removido)
+print(frutas)</code></pre>
+                    <button onclick="showOutput(this, '[\'maçã\', \'abacaxi\', \'banana\', \'laranja\']\\n[\'melancia\', \'abacaxi\', \'banana\', \'laranja\']\\n[\'melancia\', \'abacaxi\', \'laranja\']\\nlaranja\\n[\'melancia\', \'abacaxi\']')" class="mt-2 bg-slate-600 text-white px-3 py-1 text-sm rounded hover:bg-slate-700">▶ Executar</button>
+                    <div class="output mt-2 p-2 bg-slate-800 rounded hidden text-sm"></div>
+                </div>
+
+                <h3 class="font-bold text-xl mt-6 mb-2">Tuplas</h3>
+                <p class="mb-4">Uma <strong>tupla</strong> é uma coleção ordenada e <strong>imutável</strong> (você <strong>não pode</strong> mudar, adicionar ou remover itens depois de criada). Tuplas são definidas usando parênteses <code>()</code>.</p>
+                <h4 class="font-semibold text-lg mt-4 mb-2">Criando e Acessando Tuplas:</h4>
+                <div class="code-block">
+                    <button class="copy-btn" onclick="copyCode(this)">Copiar</button>
+                    <pre><code class="language-python">coordenadas = (10.5, 20.3, 5.0)
+print(coordenadas[0]) # Acessa como lista
+# coordenadas[0] = 12 # Isso causaria um TypeError!</code></pre>
+                    <button onclick="showOutput(this, '10.5')" class="mt-2 bg-slate-600 text-white px-3 py-1 text-sm rounded hover:bg-slate-700">▶ Executar</button>
+                    <div class="output mt-2 p-2 bg-slate-800 rounded hidden text-sm"></div>
+                </div>
+                <p class="mt-2">Use tuplas para dados que não devem mudar, como coordenadas geográficas fixas.</p>
+
+                <h3 class="font-bold text-xl mt-6 mb-2">Operações Comuns: Slicing e Concatenação</h3>
+                <p class="mb-4"><strong>Slicing (Fatiamento):</strong> Permite pegar uma "fatia" (parte) de uma lista ou tupla.</p>
+                <div class="code-block">
+                    <button class="copy-btn" onclick="copyCode(this)">Copiar</button>
+                    <pre><code class="language-python">numeros = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+print(numeros[2:5])   # do índice 2 até o 4
+print(numeros[:3])    # do início até o índice 2
+print(numeros[::2])   # todos, pulando de 2 em 2</code></pre>
+                    <button onclick="showOutput(this, '[2, 3, 4]\\n[0, 1, 2]\\n[0, 2, 4, 6, 8]')" class="mt-2 bg-slate-600 text-white px-3 py-1 text-sm rounded hover:bg-slate-700">▶ Executar</button>
+                    <div class="output mt-2 p-2 bg-slate-800 rounded hidden text-sm"></div>
+                </div>
+                <p class="mb-4"><strong>Concatenação:</strong> Juntar duas listas ou tuplas usando o operador <code>+</code>.</p>
+                <div class="code-block">
+                    <button class="copy-btn" onclick="copyCode(this)">Copiar</button>
+                    <pre><code class="language-python">lista1 = [1, 2]
+lista2 = [3, 4]
+lista_combinada = lista1 + lista2
+print(lista_combinada)</code></pre>
+                    <button onclick="showOutput(this, '[1, 2, 3, 4]')" class="mt-2 bg-slate-600 text-white px-3 py-1 text-sm rounded hover:bg-slate-700">▶ Executar</button>
+                    <div class="output mt-2 p-2 bg-slate-800 rounded hidden text-sm"></div>
+                </div>
+
+                <div class="mt-8 p-4 border border-teal-200 rounded-lg bg-white">
+                    <h4 class="font-bold mb-2">Desafio Prático: Invertendo uma Lista</h4>
+                    <p class="mb-3">Qual é a forma mais simples de inverter a lista <code>[10, 20, 30]</code> usando slicing?</p>
+                    <div id="quiz-5">
+                        <div class="space-y-2">
+                            <label class="flex items-center"><input type="radio" name="q5" value="[::-1]" class="mr-2"> <code>[::-1]</code></label>
+                            <label class="flex items-center"><input type="radio" name="q5" value="[0:0:-1]" class="mr-2"> <code>[0:0:-1]</code></label>
+                            <label class="flex items-center"><input type="radio" name="q5" value="reverse()" class="mr-2"> <code>lista.reverse()</code></label>
+                        </div>
+                        <button onclick="checkQuiz('q5', '[::-1]', 'feedback-5')" class="mt-3 bg-teal-600 text-white px-4 py-1 rounded hover:bg-teal-700">Verificar</button>
+                        <p id="feedback-5" class="mt-2 font-medium"></p>
+                    </div>
+                </div>
+            `,
+                8: `
+                <h2 class="text-3xl font-bold mb-4">Capítulo 8: Explorando Mais Coleções</h2>
+                <p class="mb-6">Além de listas e tuplas, Python oferece dicionários e conjuntos para diferentes necessidades de organização de dados. Saber quando usar cada um é a chave para um código eficiente.</p>
+                
+                <h3 class="font-bold text-xl mb-2">Dicionários: Pares Chave-Valor</h3>
+                <p class="mb-4">Imagine uma agenda de contatos. Você busca por um nome (a <strong>chave</strong>) para encontrar um número (o <strong>valor</strong>). É exatamente assim que os dicionários funcionam.</p>
+                <div class="code-block">
+                    <button class="copy-btn" onclick="copyCode(this)">Copiar</button>
+                    <pre><code class="language-python"># Criando um dicionário de um aluno
+aluno = {
+    "nome": "Carlos",
+    "idade": 22,
+    "curso": "Engenharia"
+}
+
+# Acessando um valor pela chave
+print(aluno["nome"])
+
+# Adicionando um novo par
+aluno["cidade"] = "São Paulo"
+print(aluno)</code></pre>
+                    <button onclick="showOutput(this, 'Carlos\\n{\'nome\': \'Carlos\', \'idade\': 22, \'curso\': \'Engenharia\', \'cidade\': \'São Paulo\'}')" class="mt-2 bg-slate-600 text-white px-3 py-1 text-sm rounded hover:bg-slate-700">▶ Executar</button>
+                    <div class="output mt-2 p-2 bg-slate-800 rounded hidden text-sm"></div>
+                </div>
+
+                <h3 class="font-bold text-xl mt-6 mb-2">Conjuntos (Sets): Itens Únicos</h3>
+                <p class="mb-4">Um conjunto é como uma coleção de figurinhas sem nenhuma repetida. A ordem não importa, e cada item é único.</p>
+                 <div class="code-block">
+                    <button class="copy-btn" onclick="copyCode(this)">Copiar</button>
+                    <pre><code class="language-python"># Criando um conjunto com itens duplicados
+numeros = {1, 2, 3, 2, 1, 4}
+print(numeros) # Python remove as duplicatas
+
+letras = set("abracadabra") # Cria um conjunto a partir de uma string
+print(letras)</code></pre>
+                    <button onclick="showOutput(this, '{1, 2, 3, 4}\\n{\'a\', \'b\', \'r\', \'c\', \'d\'}')" class="mt-2 bg-slate-600 text-white px-3 py-1 text-sm rounded hover:bg-slate-700">▶ Executar</button>
+                    <div class="output mt-2 p-2 bg-slate-800 rounded hidden text-sm"></div>
+                </div>
+                <h4 class="font-semibold text-lg mt-4 mb-2">Operações de Conjunto:</h4>
+                <div class="code-block">
+                    <button class="copy-btn" onclick="copyCode(this)">Copiar</button>
+                    <pre><code class="language-python">A = {1, 2, 3, 4}
+B = {3, 4, 5, 6}
+
+print(A.union(B)) # Todos os elementos
+print(A.intersection(B)) # Elementos em comum
+print(A.difference(B)) # Elementos em A que não estão em B</code></pre>
+                    <button onclick="showOutput(this, '{1, 2, 3, 4, 5, 6}\\n{3, 4}\\n{1, 2}')" class="mt-2 bg-slate-600 text-white px-3 py-1 text-sm rounded hover:bg-slate-700">▶ Executar</button>
+                    <div class="output mt-2 p-2 bg-slate-800 rounded hidden text-sm"></div>
+                </div>
+
+                <h3 class="font-bold text-xl mt-8 mb-4">Quando usar cada tipo de coleção?</h3>
+                <p class="mb-4">A escolha da estrutura de dados correta é uma das decisões mais importantes na programação. Passe o mouse ou toque em cada tipo para ver suas características principais e quando é melhor usá-lo.</p>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 text-center">
+                    <div class="p-4 bg-slate-100 rounded-lg border-2 border-transparent hover:border-teal-500 transition">
+                        <h4 class="font-bold text-lg">Lista <code>[]</code></h4>
+                        <p class="text-sm mt-2">Coleção ordenada e <strong>mutável</strong>. Use quando precisar de uma sequência flexível de itens que pode mudar.</p>
+                    </div>
+                    <div class="p-4 bg-slate-100 rounded-lg border-2 border-transparent hover:border-teal-500 transition">
+                        <h4 class="font-bold text-lg">Tupla <code>()</code></h4>
+                        <p class="text-sm mt-2">Coleção ordenada e <strong>imutável</strong>. Use para dados que não devem ser alterados, como coordenadas.</p>
+                    </div>
+                    <div class="p-4 bg-slate-100 rounded-lg border-2 border-transparent hover:border-teal-500 transition">
+                        <h4 class="font-bold text-lg">Dicionário <code>{}</code></h4>
+                        <p class="text-sm mt-2">Pares chave-valor. Use para associar dados e acessá-los rapidamente por um identificador único.</p>
+                    </div>
+                     <div class="p-4 bg-slate-100 rounded-lg border-2 border-transparent hover:border-teal-500 transition">
+                        <h4 class="font-bold text-lg">Conjunto <code>set()</code></h4>
+                        <p class="text-sm mt-2">Itens únicos e não ordenados. Use para remover duplicatas ou realizar operações matemáticas de conjuntos.</p>
+                    </div>
+                </div>
+            `,
+                9:
+                    '<h2 class="text-3xl font-bold mb-4">Capítulo 9: Lidando com Erros: Tratamento de Exceções</h2>' +
+                    '<p class="mb-6">Programas, assim como pessoas, podem cometer erros! E quando isso acontece, o programa geralmente "quebra" e para de funcionar. Em programação, esses erros são chamados de <strong>exceções</strong>. Aprender a tratá-las é crucial para criar programas robustos e amigáveis.</p>' +
+                    '<h3 class="font-bold text-xl mb-2">O que são erros e exceções?</h3>' +
+                    '<p class="mb-4"><strong>Erros de Sintaxe:</strong> Erros que você comete ao escrever o código (ex: esquecer um parêntese). Python avisa antes de executar.</p>' +
+                    '<p class="mb-4"><strong>Exceções (Erros em Tempo de Execução):</strong> Acontecem enquanto o programa está rodando, mesmo com sintaxe correta. Exemplos comuns:</p>' +
+                    '<ul class="list-disc list-inside space-y-1 mb-4">' +
+                    "<li><strong><code>ZeroDivisionError</code>:</strong> Dividir por zero.</li>" +
+                    "<li><strong><code>ValueError</code>:</strong> Converter um texto não numérico para número.</li>" +
+                    "<li><strong><code>TypeError</code>:</strong> Operação com tipo de dado inadequado (ex: somar número com texto).</li>" +
+                    "<li><strong><code>IndexError</code>:</strong> Acessar índice que não existe em lista/tupla.</li>" +
+                    "<li><strong><code>KeyError</code>:</strong> Acessar chave que não existe em dicionário.</li>" +
+                    "</ul>" +
+                    '<div class="code-block">' +
+                    '<button class="copy-btn" onclick="copyCode(this)">Copiar</button>' +
+                    '<pre><code class="language-python"># Exemplo de ZeroDivisionError\\n# resultado = 10 / 0 \\n\\n# Exemplo de ValueError\\n# numero = int("abc")\\n\\n# Exemplo de TypeError\\n# soma = 5 + "texto"\\n\\n# Exemplo de IndexError\\n# minha_lista = [1, 2]\\n# print(minha_lista[5])</code></pre>' +
+                    '<button onclick="showOutput(this, \'Esses códigos gerariam erros!\')" class="mt-2 bg-slate-600 text-white px-3 py-1 text-sm rounded hover:bg-slate-700">▶ Executar (Simulado)</button>' +
+                    '<div class="output mt-2 p-2 bg-slate-800 rounded hidden text-sm"></div>' +
+                    "</div>" +
+                    '<h3 class="font-bold text-xl mt-6 mb-2"><code>try</code>, <code>except</code>, <code>else</code>, <code>finally</code></h3>' +
+                    '<p class="mb-4">Python nos oferece uma estrutura elegante para "tentar" executar um código e "capturar" (tratar) exceções se elas ocorrerem.</p>' +
+                    '<ul class="list-disc list-inside space-y-1 mb-4">' +
+                    '<li><strong><code>try</code>:</strong> O código que você "tenta" executar.</li>' +
+                    "<li><strong><code>except</code>:</strong> Executado <strong>apenas se</strong> uma exceção ocorrer no <code>try</code>.</li>" +
+                    "<li><strong><code>else</code>:</strong> Executado <strong>apenas se</strong> o <code>try</code> for executado <strong>sem nenhum erro</strong>.</li>" +
+                    "<li><strong><code>finally</code>:</strong> Executado <strong>sempre</strong>, ocorrendo ou não uma exceção.</li>" +
+                    "</ul>" +
+                    '<div class="code-block">' +
+                    '<button class="copy-btn" onclick="copyCode(this)">Copiar</button>' +
+                    '<pre><code class="language-python">try:\\n    num1 = int(input("Digite um número: "))\\n    num2 = int(input("Digite outro número: "))\\n    resultado = num1 / num2\\n    print(f"O resultado da divisão é: {resultado}")\\nexcept ZeroDivisionError:\\n    print("Erro: Não é possível dividir por zero!")\\nexcept ValueError:\\n    print("Erro: Entrada inválida. Digite apenas números.")\\nelse:\\n    print("Divisão realizada com sucesso!")\\nfinally:\\n    print("Fim da tentativa de divisão.")</code></pre>' +
+                    '<button onclick="showOutput(this, \'Digite um número: [Usuário digita: 10]\\nDigite outro número: [Usuário digita: 0]\\nErro: Não é possível dividir por zero!\\nFim da tentativa de divisão.\')" class="mt-2 bg-slate-600 text-white px-3 py-1 text-sm rounded hover:bg-slate-700">▶ Executar (Simulado)</button>' +
+                    '<div class="output mt-2 p-2 bg-slate-800 rounded hidden text-sm"></div>' +
+                    "</div>" +
+                    '<div class="mt-8 p-4 border border-teal-200 rounded-lg bg-white">' +
+                    '<h4 class="font-bold mb-2">Desafio Prático: Tratamento de Erro</h4>' +
+                    '<p class="mb-3">Se o usuário digitar "dez" como primeiro número, qual bloco será executado?</p>' +
+                    '<div class="code-block mb-4"><pre><code class="language-python">try:\\n    num = int(input("Digite um número: "))\\n    print(f"Número digitado: {num}")\\nexcept ValueError:\\n    print("Isso não é um número válido!")\\nelse:\\n    print("Tudo certo!")</code></pre></div>' +
+                    '<div id="quiz-6">' +
+                    '<div class="space-y-2">' +
+                    '<label class="flex items-center"><input type="radio" name="q6" value="try" class="mr-2"> Bloco `try`</label>' +
+                    '<label class="flex items-center"><input type="radio" name="q6" value="except" class="mr-2"> Bloco `except`</label>' +
+                    '<label class="flex items-center"><input type="radio" name="q6" value="else" class="mr-2"> Bloco `else`</label>' +
+                    "</div>" +
+                    "<button onclick=\"checkQuiz('q6', 'except', 'feedback-6')\" class=\"mt-3 bg-teal-600 text-white px-4 py-1 rounded hover:bg-teal-700\">Verificar</button>" +
+                    '<p id="feedback-6" class="mt-2 font-medium"></p>' +
+                    "</div>" +
+                    "</div>",
+                10: `
+                <h2 class="text-3xl font-bold mb-4">Capítulo 10: Próximos Passos na Jornada</h2>
+                 <p class="mb-6">Parabéns! Você completou os fundamentos. A programação é uma jornada de aprendizado contínuo. O mais importante é nunca parar de praticar e explorar.</p>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="bg-teal-50 p-4 rounded-lg">
+                        <h3 class="font-bold text-xl text-teal-800 mb-2">Continue Aprendendo</h3>
+                        <ul class="list-disc list-inside space-y-1">
+                            <li>Explore a <strong>Documentação Oficial</strong> do Python.</li>
+                            <li>Faça cursos online em plataformas como Coursera, Alura ou FreeCodeCamp.</li>
+                            <li>Assista a tutoriais no YouTube.</li>
+                        </ul>
+                    </div>
+                    <div class="bg-slate-100 p-4 rounded-lg">
+                        <h3 class="font-bold text-xl text-slate-800 mb-2">Pratique com Projetos</h3>
+                        <p>A teoria só se fixa com a prática. Tente criar:</p>
+                        <ul class="list-disc list-inside space-y-1 mt-2">
+                           <li>Uma calculadora simples.</li>
+                           <li>Um jogo de adivinhação de números.</li>
+                           <li>Um automatizador de tarefas simples (ex: organizar arquivos).</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="mt-8 text-center bg-white p-6 rounded-lg shadow-inner">
+                    <h3 class="text-2xl font-bold">A comunidade Python te espera!</h3>
+                    <p class="mt-2">Participe de fóruns, contribua com projetos no GitHub e não tenha medo de perguntar. Cada erro é um passo no seu aprendizado.</p>
+                    <p class="mt-4 font-semibold text-teal-700">Continue codificando, continue criando!</p>
+                </div>
+            `,
+            };
+
+            const glossaryData = [
+                {
+                    term: "Imprimir",
+                    syntax: 'print("Olá!")',
+                    desc: "Mostra algo na tela.",
+                },
+                {
+                    term: "Variável",
+                    syntax: 'nome = "Python"',
+                    desc: "Armazena um valor.",
+                },
+                {
+                    term: "Tipos de Dados",
+                    syntax: "int, float, str, bool",
+                    desc: "Inteiro, decimal, texto, verdadeiro/falso.",
+                },
+                {
+                    term: "Entrada de Dados",
+                    syntax: 'input("Qual é o seu nome?")',
+                    desc: "Pede uma entrada ao usuário (sempre retorna string).",
+                },
+                {
+                    term: "Comentário",
+                    syntax: "# Uma linha",
+                    desc: "Anotações no código, ignoradas pelo Python.",
+                },
+                {
+                    term: "Condicional",
+                    syntax: "if condicao:",
+                    desc: "Executa código baseado em condições.",
+                },
+                {
+                    term: "Loop for",
+                    syntax: "for item in sequencia:",
+                    desc: "Itera sobre itens de uma sequência.",
+                },
+                {
+                    term: "Loop while",
+                    syntax: "while condicao:",
+                    desc: "Repete enquanto a condição for verdadeira.",
+                },
+                {
+                    term: "Função",
+                    syntax: "def minha_funcao(param):",
+                    desc: "Define um bloco de código reutilizável.",
+                },
+                {
+                    term: "Lista",
+                    syntax: '[1, "a", 3]',
+                    desc: "Coleção ordenada e mutável.",
+                },
+                {
+                    term: "Tupla",
+                    syntax: '(1, "a", 3)',
+                    desc: "Coleção ordenada e imutável.",
+                },
+                {
+                    term: "Dicionário",
+                    syntax: '{"chave": "valor"}',
+                    desc: "Coleção de pares chave-valor.",
+                },
+                {
+                    term: "Conjunto",
+                    syntax: "{1, 2, 3} ou set()",
+                    desc: "Coleção não ordenada de itens únicos.",
+                },
+                {
+                    term: "Tratamento de Erro",
+                    syntax: "try: ... except Erro:",
+                    desc: "Tenta executar código e captura exceções.",
+                },
+                {
+                    term: "Argumento",
+                    syntax: 'minha_funcao("valor_real")',
+                    desc: "O valor real passado para um parâmetro de uma função.",
+                },
+                {
+                    term: "Biblioteca",
+                    syntax: "import math",
+                    desc: "Um conjunto de módulos e funções pré-escritas.",
+                },
+                {
+                    term: "Bug",
+                    syntax: "",
+                    desc: "Um erro no código que causa um comportamento inesperado.",
+                },
+                {
+                    term: "IDE",
+                    syntax: "VS Code, PyCharm",
+                    desc: "Ambiente de Desenvolvimento Integrado.",
+                },
+                {
+                    term: "Indentação",
+                    syntax: '    print("dentro do if")',
+                    desc: "O espaço que define a estrutura e o escopo em Python.",
+                },
+                {
+                    term: "Índice",
+                    syntax: "minha_lista[0]",
+                    desc: "A posição numérica de um item em uma sequência.",
+                },
+                {
+                    term: "Mutável",
+                    syntax: "listas, dicionários",
+                    desc: "Um tipo de dado que pode ser alterado após ser criado.",
+                },
+                {
+                    term: "Imutável",
+                    syntax: "tuplas, strings",
+                    desc: "Um tipo de dado que não pode ser alterado após ser criado.",
+                },
+                {
+                    term: "Parâmetro",
+                    syntax: "def func(parametro):",
+                    desc: "O nome da variável na definição de uma função.",
+                },
+                {
+                    term: "Sintaxe",
+                    syntax: "",
+                    desc: "As regras de escrita de uma linguagem de programação.",
+                },
+            ];
+
+            let activeChapter = 1;
+            let usageChartInstance = null;
+
+            function renderNavigation() {
+                const navContainer = document.getElementById("navigation");
+                navContainer.innerHTML = "";
+                chapters.forEach((chapter) => {
+                    const card = `
+                    <div id="nav-${chapter.id}" onclick="loadChapter(${
+                        chapter.id
+                    })"
+                         class="content-card bg-white p-6 rounded-lg shadow-md cursor-pointer border-2 border-transparent hover:border-teal-500">
+                        <div class="flex items-center">
+                            <span class="text-2xl font-bold text-teal-600 mr-4">${String(
+                                chapter.id
+                            ).padStart(2, "0")}</span>
+                            <div>
+                                <h3 class="text-xl font-semibold">${
+                                    chapter.title
+                                }</h3>
+                                <p class="text-slate-600 text-sm">${
+                                    chapter.desc
+                                }</p>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                    navContainer.innerHTML += card;
+                });
+            }
+
+            function loadChapter(id) {
+                activeChapter = id;
+                const contentArea = document.getElementById("content-area");
+                const navCards = document.querySelectorAll(".content-card");
+
+                navCards.forEach((card) => {
+                    card.classList.remove(
+                        "ring-2",
+                        "ring-teal-500",
+                        "shadow-xl"
+                    );
+                    if (card.id === `nav-${id}`) {
+                        card.classList.add(
+                            "ring-2",
+                            "ring-teal-500",
+                            "shadow-xl"
+                        );
+                    }
+                });
+
+                const content =
+                    contentData[id] ||
+                    `<h2 class="text-3xl font-bold mb-4">Capítulo ${id}: ${
+                        chapters.find((c) => c.id === id).title
+                    }</h2><p>Conteúdo em breve...</p>`;
+                contentArea.innerHTML = content;
+
+                if (id === 1) {
+                    renderUsageChart();
+                }
+            }
+
+            function renderUsageChart() {
+                const ctx = document.getElementById("usageChart");
+                if (!ctx) return;
+
+                if (usageChartInstance) {
+                    usageChartInstance.destroy();
+                }
+
+                usageChartInstance = new Chart(ctx.getContext("2d"), {
+                    type: "bar",
+                    data: {
+                        labels: [
+                            "Ciência de Dados & IA",
+                            "Desenvolvimento Web",
+                            "Automação",
+                            "Finanças",
+                            "Jogos",
+                        ],
+                        datasets: [
+                            {
+                                label: "Popularidade de Uso do Python",
+                                data: [45, 30, 15, 7, 3],
+                                backgroundColor: [
+                                    "rgba(13, 148, 136, 0.6)",
+                                    "rgba(15, 118, 110, 0.6)",
+                                    "rgba(17, 94, 89, 0.6)",
+                                    "rgba(20, 83, 45, 0.6)",
+                                    "rgba(6, 78, 59, 0.6)",
+                                ],
+                                borderColor: [
+                                    "rgba(13, 148, 136, 1)",
+                                    "rgba(15, 118, 110, 1)",
+                                    "rgba(17, 94, 89, 1)",
+                                    "rgba(20, 83, 45, 1)",
+                                    "rgba(6, 78, 59, 1)",
+                                ],
+                                borderWidth: 1,
+                            },
+                        ],
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        indexAxis: "y",
+                        plugins: {
+                            legend: { display: false },
+                            title: {
+                                display: true,
+                                text: "Uso Estimado de Python por Área",
+                                font: { size: 16 },
+                            },
+                        },
+                        scales: {
+                            x: {
+                                beginAtZero: true,
+                                ticks: {
+                                    callback: function (value) {
+                                        return value + "%";
+                                    },
+                                },
+                            },
+                        },
+                    },
+                });
+            }
+
+            function copyCode(button) {
+                const codeBlock = button.parentElement;
+                const code = codeBlock.querySelector("code").innerText;
+                navigator.clipboard.writeText(code).then(() => {
+                    button.innerText = "Copiado!";
+                    setTimeout(() => {
+                        button.innerText = "Copiar";
+                    }, 2000);
+                });
+            }
+
+            function showOutput(button, outputText) {
+                const outputDiv = button.nextElementSibling;
+                outputDiv.innerText = `> ${outputText}`;
+                outputDiv.classList.remove("hidden");
+            }
+
+            function checkQuiz(questionName, correctAnswer, feedbackId) {
+                const selected = document.querySelector(
+                    `input[name="${questionName}"]:checked`
+                );
+                const feedbackEl = document.getElementById(feedbackId);
+                if (!selected) {
+                    feedbackEl.textContent =
+                        "Por favor, selecione uma resposta.";
+                    feedbackEl.className = "mt-2 font-medium text-yellow-600";
+                    return;
+                }
+                if (selected.value === correctAnswer) {
+                    feedbackEl.textContent = "Correto!";
+                    feedbackEl.className = "mt-2 font-medium text-green-600";
+                } else {
+                    feedbackEl.textContent = "Incorreto. Tente novamente.";
+                    feedbackEl.className = "mt-2 font-medium text-red-600";
+                }
+            }
+
+            function renderGlossary(filter = "") {
+                const glossaryContainer =
+                    document.getElementById("glossary-content");
+                glossaryContainer.innerHTML = "";
+                const filteredData = glossaryData.filter(
+                    (item) =>
+                        item.term
+                            .toLowerCase()
+                            .includes(filter.toLowerCase()) ||
+                        item.desc.toLowerCase().includes(filter.toLowerCase())
+                );
+
+                if (filteredData.length === 0) {
+                    glossaryContainer.innerHTML =
+                        '<p class="text-slate-500">Nenhum termo encontrado.</p>';
+                    return;
+                }
+
+                filteredData.forEach((item) => {
+                    const entry = `
+                    <div class="mb-4 pb-2 border-b">
+                        <h4 class="font-bold text-lg">${item.term}</h4>
+                        ${
+                            item.syntax
+                                ? `<div class="code-block text-sm my-2"><pre><code>${item.syntax}</code></pre></div>`
+                                : ""
+                        }
+                        <p class="text-slate-600">${item.desc}</p>
+                    </div>
+                `;
+                    glossaryContainer.innerHTML += entry;
+                });
+            }
+
+            document
+                .getElementById("glossary-btn")
+                .addEventListener("click", () => {
+                    document
+                        .getElementById("glossary-modal")
+                        .classList.remove("hidden");
+                    document.getElementById("glossary-search").value = ""; // Clear search on open
+                    renderGlossary();
+                });
+
+            document
+                .getElementById("close-modal-btn")
+                .addEventListener("click", () => {
+                    document
+                        .getElementById("glossary-modal")
+                        .classList.add("hidden");
+                });
+
+            document
+                .getElementById("glossary-search")
+                .addEventListener("input", (e) => {
+                    renderGlossary(e.target.value);
+                });
+
+            window.onload = () => {
+                renderNavigation();
+                loadChapter(1);
+            };
+        </script>
+    </body>
+</html>
