@@ -17,7 +17,7 @@ Originally, I planned to use a third AI to convert the document into an eBook. B
 Throughout the process, Gemini pointed out code and formatting issues and prompted me to correct them. I approved all suggestions, which made the development smoother and faster.
 
 ## 🚀 Result
-You can view the final result here: **[https://murielzounar.github.io/lab-natty-or-not/]**
+You can view the final result here: <a href="https://murielzounar.github.io/lab-natty-or-not/" target="_blank">View the Web Page</a>
 
 ## 💭 Reflection
 This project showed me how AI can significantly speed up the development process.  
