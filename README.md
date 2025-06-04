@@ -1,51 +1,26 @@
-# Natural ou Fake Natty? Como Vencer na Era das IAs Generativas
+# 🐍 Python Learning Guide — AI-Assisted Web Page
 
-## 🚀 Introdução
+## 📒 Overview
+This project is a beginner-friendly Python learning guide presented as a single-page web application.  
+The content is organized into modular chapters to enhance readability and learning flow.
 
-> Woooow! Look at this 👀
+## 🤖 Technologies Used
+- Google Gemini  
+- ChatGPT
 
-Olá pessoal, Venilton da DIO aqui! Inspirado na hype _"Natty or Not"_ do fisiculturismo, este Lab da DIO te convida a conhecer o mundo das IAs Generativas, explorando o potencial dessas tendências tecnológicas incríveis!
+## 🛠️ How It Was Built
+The initial idea was to create an eBook with practical Python tips. To generate the content, I used ChatGPT, then reviewed and edited the material.  
+After that, I used Google Gemini to structure the content as a formatted document.
 
-## 🎯 Bora Pro Desafio!? Você Já Venceu 💪🤓
+Originally, I planned to use a third AI to convert the document into an eBook. But to my surprise, Gemini suggested generating a web page instead — and I accepted.
 
-### Objetivos
+Throughout the process, Gemini pointed out code and formatting issues and prompted me to correct them. I approved all suggestions, which made the development smoother and faster.
 
-1. **Explorar IAs Generativas**: Utilize essas tecnologias para criar conteúdos que sejam o mais realista possível. Seja criativo! Você pode produzir imagens, textos, áudios, vídeos ou combinações de tudo isso!
-1. **Potfólio de Projetos**:
-    1. Faça o "fork" deste repositório, criando uma cópia em seu GitHub pessoal;
-    2. Edite seu README com os detalhes do seu projeto, siga nosso [Template](#template) (é só copiar, colar e preencher);
-    3. Submeta o link do seu repositório na plataforma da DIO. Pronto, você acabou de fortalecer seu portfólio de projetos nos perfis do GitHub e DIO 🚀
-1. **Efeito de Rede**: Compartilhe seus resultados nas redes sociais com a hashtag **#LabDIONattyOrNot**. Não esqueça de nos marcar: [DIO](https://www.linkedin.com/school/dio-makethechange) e [falvojr](https://www.linkedin.com/in/falvojr).
+## 🚀 Result
+You can view the final result here: **[https://murielzounar.github.io/lab-natty-or-not/]**
 
-### Template
+## 💭 Reflection
+This project showed me how AI can significantly speed up the development process.  
+Creating a similar web page from scratch — given my current skill set — would have taken several days. With AI, I completed it in about **30 minutes**.
 
-```markdown
-# Título do Projeto Extremamente Aesthetic ;)
-
-## 📒 Descrição
-Breve descrição do seu projeto
-
-## 🤖 Tecnologias Utilizadas
-Liste as IAs Generativas e outras ferramentas usadas
-
-## 🧐 Processo de Criação
-Descreva como você criou o conteúdo
-
-## 🚀 Resultados
-Apresente os resultados do seu projeto
-
-## 💭 Reflexão (Opcional)
-Comente sobre o desafio de criar algo 'natty' com IA.
-```
-
-### Exemplos e Insigths
-
-- [E-BOOK](/exemplos/E-BOOK.md)
-- [Podcast](/exemplos/PODCAST.md)
-- [Vídeo (Avatar Virtual)](/exemplos/VIDEO.md)
-
-## Links Interessantes
-
-[Base10: If You’re Not First, You’re Last: How AI Becomes Mission Critical](https://base10.vc/post/generative-ai-mission-critical/)
-
-![Base10's Trend Map Generative AI](https://github.com/digitalinnovationone/lab-natty-or-not/assets/730492/f4df26e8-f8f7-4419-8252-c69d73ea930c)
+Used properly, AI is not just a tool — it's a powerful collaborator.
